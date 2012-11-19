@@ -1,6 +1,7 @@
 #include "dialog.hpp"
 #include "ui_graph.h"
 
+#include "Arrow.hpp"
 #include "BasicBlockItem.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
@@ -13,7 +14,7 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
 {
   ui->setupUi(this);
 
-  scene = new QGraphicsScene(this);
+  scene = new ControlFlowGraphScene(this);
   ui->graphicsView->setScene(scene);
 
   using namespace boost;
@@ -48,13 +49,22 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
 
   VerterIteratorType vtx_iter, vtx_end;
   int id = 0;
+  BasicBlockItem * lastItem = nullptr;
   for (tie(vtx_iter, vtx_end) = vertices(graph); vtx_iter != vtx_end; ++vtx_iter)
   {
     auto curItem = new BasicBlockItem(id++);
     curItem->moveBy(pos[*vtx_iter][0], pos[*vtx_iter][1]);
     items.push_back(curItem);
     scene->addItem(curItem);
+
+    if (lastItem == nullptr)
+      lastItem = curItem;
+    else if (rand() & 1)
+      lastItem = curItem;
+    else
+      scene->addItem(new Arrow(lastItem, curItem));
   }
+
 }
 
 Dialog::~Dialog(void)

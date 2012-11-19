@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QDialog>
-#include <QGraphicsScene>
+#include "ControlFlowGraphScene.hpp"
 
 namespace Ui
 {
@@ -22,7 +22,7 @@ public:
 
 private:
   Ui::Dialog *ui;
-  QGraphicsScene *scene;
+  ControlFlowGraphScene *scene;
   typedef std::vector<QGraphicsItem *> VectorItem;
   VectorItem items;
 };

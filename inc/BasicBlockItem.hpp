@@ -19,6 +19,7 @@ protected:
 private:
   bool _isPress;
   int _id;
+  qreal _z;
 };
 
 #endif // BasicBlockItem_h__

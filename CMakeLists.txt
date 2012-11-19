@@ -19,25 +19,24 @@ include_directories(${INCROOT})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(INC
+  ${INCROOT}/Arrow.hpp
   ${INCROOT}/BasicBlockItem.hpp
   ${INCROOT}/ControlFlowGraphScene.hpp
   ${INCROOT}/dialog.hpp
-  ${INCROOT}/graph_view.hpp
   ${INCROOT}/graph.hpp
 )
 
 set(SRC
+  ${SRCROOT}/Arrow.cpp
   ${SRCROOT}/BasicBlockItem.cpp
   ${SRCROOT}/ControlFlowGraphScene.cpp
   ${SRCROOT}/dialog.cpp
-  ${SRCROOT}/graph_view.cpp
   ${SRCROOT}/graph.cpp
   ${SRCROOT}/main.cpp
 )
 
 set(MOCINC
   ${INCROOT}/dialog.hpp
-  ${INCROOT}/graph_view.hpp
 )
 
 set(UI
