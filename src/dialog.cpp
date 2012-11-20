@@ -44,7 +44,7 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
   points.resize(num_vertices(graph));
   PositionMapType pos = PositionMapType(points.begin(), get(vertex_index, graph));
   auto rectScene = scene->sceneRect();
-  rectangle_topology<> topo(-1000.0, -1000.0, 1000.0, 1000.0);
+  rectangle_topology<> topo(0.0, 0.0, 1000.0, 1000.0);
   fruchterman_reingold_force_directed_layout(graph, pos, topo);
 
   VerterIteratorType vtx_iter, vtx_end;

@@ -36,6 +36,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   endPt.setX(endPos.x() + endBoundingRect.width() / 2);
   endPt.setY(endPos.y());
 
+  painter->setRenderHint(QPainter::Antialiasing);
   setLine(QLineF(startPt, endPt));
   painter->drawLine(line());
 }
