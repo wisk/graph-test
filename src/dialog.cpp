@@ -4,67 +4,77 @@
 #include "Arrow.hpp"
 #include "BasicBlockItem.hpp"
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topology.hpp>
-#include <boost/graph/kamada_kawai_spring_layout.hpp>
-#include <boost/graph/fruchterman_reingold.hpp>
+#include <QMessageBox>
 
+#include <ogdf/basic/Graph.h>
+#include <ogdf/basic/GraphAttributes.h>
+#include <ogdf/layered/SugiyamaLayout.h>
 
 Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
 {
-  ui->setupUi(this);
-
-  scene = new ControlFlowGraphScene(this);
-  ui->graphicsView->setScene(scene);
-
-  using namespace boost;
-  typedef adjacency_list<> GraphType;
-  GraphType graph;
-  add_edge(1, 2, graph);
-  add_edge(1, 3, graph);
-  add_edge(1, 4, graph);
-  add_edge(2, 4, graph);
-  add_edge(2, 2, graph);
-  add_edge(2, 5, graph);
-  add_edge(6, 4, graph);
-  add_edge(6, 4, graph);
-  add_edge(6, 9, graph);
-  add_edge(9, 7, graph);
-  add_edge(0, 3, graph);
-  add_edge(8, 9, graph);
-
-  typedef rectangle_topology<> TopologyType;
-  typedef TopologyType::point_type PointType;
-  typedef std::vector<PointType> PointVectorType;
-  typedef iterator_property_map<
-    PointVectorType::iterator, property_map<GraphType, vertex_index_t>::type> PositionMapType;
-  typedef graph_traits<GraphType>::vertex_iterator VerterIteratorType;
-
-  PointVectorType points;
-  points.resize(num_vertices(graph));
-  PositionMapType pos = PositionMapType(points.begin(), get(vertex_index, graph));
-  auto rectScene = scene->sceneRect();
-  rectangle_topology<> topo(0.0, 0.0, 1000.0, 1000.0);
-  fruchterman_reingold_force_directed_layout(graph, pos, topo);
-
-  VerterIteratorType vtx_iter, vtx_end;
-  int id = 0;
-  BasicBlockItem * lastItem = nullptr;
-  for (tie(vtx_iter, vtx_end) = vertices(graph); vtx_iter != vtx_end; ++vtx_iter)
+  //try
   {
-    auto curItem = new BasicBlockItem(id++);
-    curItem->moveBy(pos[*vtx_iter][0], pos[*vtx_iter][1]);
-    items.push_back(curItem);
-    scene->addItem(curItem);
+    ui->setupUi(this);
 
-    if (lastItem == nullptr)
-      lastItem = curItem;
-    else if (rand() & 1)
-      lastItem = curItem;
-    else
-      scene->addItem(new Arrow(lastItem, curItem));
+    scene = new ControlFlowGraphScene(this);
+    ui->graphicsView->setScene(scene);
+
+    using namespace ogdf;
+
+    Graph G;
+    GraphAttributes GA(G, GraphAttributes::nodeGraphics | GraphAttributes::edgeGraphics);
+
+    const int Len = 11;
+    node lastNode = nullptr;
+    std::vector<node> nodes;
+    nodes.reserve(Len);
+    for (int i = 0; i < Len; ++i)
+      nodes.push_back(G.newNode());
+
+    std::vector<edge> edges;
+    edges.push_back(G.newEdge(nodes[0], nodes[1]));
+    edges.push_back(G.newEdge(nodes[0], nodes[2]));
+    edges.push_back(G.newEdge(nodes[1], nodes[3]));
+    edges.push_back(G.newEdge(nodes[2], nodes[3]));
+    edges.push_back(G.newEdge(nodes[3], nodes[4]));
+    edges.push_back(G.newEdge(nodes[4], nodes[5]));
+    edges.push_back(G.newEdge(nodes[5], nodes[4]));
+    edges.push_back(G.newEdge(nodes[5], nodes[6]));
+    edges.push_back(G.newEdge(nodes[6], nodes[7]));
+    edges.push_back(G.newEdge(nodes[6], nodes[8]));
+    edges.push_back(G.newEdge(nodes[6], nodes[9]));
+    edges.push_back(G.newEdge(nodes[7], nodes[10]));
+    edges.push_back(G.newEdge(nodes[8], nodes[10]));
+    edges.push_back(G.newEdge(nodes[9], nodes[10]));
+
+    GA.setAllHeight(110);
+    GA.setAllWidth(110);
+
+    SugiyamaLayout SL;
+    SL.call(GA);
+
+    int i = 0;
+    node v;
+    std::vector<QGraphicsItem*> items;
+    forall_nodes(v, G)
+    {
+      auto bbItem = new BasicBlockItem(i++);
+      items.push_back(bbItem);
+      bbItem->moveBy(GA.x(v), GA.y(v));
+      scene->addItem(bbItem);
+    }
+
+    edge e;
+    forall_edges(e, G)
+    {
+      auto bbEdge = new Arrow(items[e->source()->index()], items[e->target()->index()]);
+      scene->addItem(bbEdge);
+    }
   }
-
+  //catch (ogdf::Exception const& e)
+  //{
+  //  QMessageBox::warning(this, "OGDF exception", typeid(e).name());
+  //}
 }
 
 Dialog::~Dialog(void)

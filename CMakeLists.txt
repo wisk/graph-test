@@ -10,13 +10,18 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 include_directories(${Boost_INCLUDE_DIRS})
 
-
 set(INCROOT ${CMAKE_SOURCE_DIR}/inc)
 set(SRCROOT ${CMAKE_SOURCE_DIR}/src)
 set(UIROOT  ${CMAKE_SOURCE_DIR}/ui )
 
 include_directories(${INCROOT})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+find_package(OGDF REQUIRED)
+
+include_directories(${OGDF_INCLUDE_DIRS})
 
 set(INC
   ${INCROOT}/Arrow.hpp
@@ -57,4 +62,4 @@ add_executable(graph-test ${GUI_TYPE}
   ${UIINC}
 )
 
-target_link_libraries(graph-test ${QT_LIBRARIES})
+target_link_libraries(graph-test ${QT_LIBRARIES} ${OGDF_LIBRARIES})
