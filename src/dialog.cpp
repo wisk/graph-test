@@ -9,6 +9,8 @@
 #include <ogdf/basic/Graph.h>
 #include <ogdf/basic/GraphAttributes.h>
 #include <ogdf/layered/SugiyamaLayout.h>
+#include <ogdf/layered/MedianHeuristic.h>
+#include <ogdf/layered/OptimalRanking.h>
 
 Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
 {
@@ -47,11 +49,13 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     edges.push_back(G.newEdge(nodes[8], nodes[10]));
     edges.push_back(G.newEdge(nodes[9], nodes[10]));
 
-    GA.setAllHeight(110);
-    GA.setAllWidth(110);
+    GA.setAllHeight(150);
+    GA.setAllWidth(150);
 
     SugiyamaLayout SL;
     SL.call(GA);
+
+    GA.writeGML("test.gml");
 
     int i = 0;
     node v;
@@ -64,11 +68,15 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
       scene->addItem(bbItem);
     }
 
-    edge e;
-    forall_edges(e, G)
+    forall_nodes(v, G)
     {
-      auto bbEdge = new Arrow(items[e->source()->index()], items[e->target()->index()]);
-      scene->addItem(bbEdge);
+      edge e;
+      forall_adj_edges(e, v)
+      {
+        auto bends = GA.bends(e);
+        auto bbEdge = new Arrow(items[e->source()->index()], items[e->target()->index()], bends);
+        scene->addItem(bbEdge);
+      }
     }
   }
   //catch (ogdf::Exception const& e)
