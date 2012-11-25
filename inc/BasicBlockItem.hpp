@@ -7,7 +7,7 @@
 class BasicBlockItem : public QGraphicsItem
 {
 public:
-  BasicBlockItem(int id);
+  BasicBlockItem(qreal width, qreal height, int id);
 
   QRectF boundingRect(void) const;
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -17,6 +17,7 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+  qreal _width, _height;
   bool _isPress;
   int _id;
   qreal _z;

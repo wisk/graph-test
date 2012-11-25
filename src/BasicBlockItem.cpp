@@ -1,14 +1,14 @@
 #include "BasicBlockItem.hpp"
 #include <boost/lexical_cast.hpp>
 
-BasicBlockItem::BasicBlockItem(int id) : _isPress(false), _id(id), _z(zValue())
+BasicBlockItem::BasicBlockItem(qreal width, qreal height, int id) : _width(width), _height(height), _isPress(false), _id(id), _z(zValue())
 {
   setFlag(ItemIsMovable);
 }
 
 QRectF BasicBlockItem::boundingRect(void) const
 {
-  return QRectF(0, 0, 100, 100);
+  return QRectF(0, 0, _width, _height);
 }
 
 void BasicBlockItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)

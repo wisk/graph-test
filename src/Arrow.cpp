@@ -73,7 +73,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   if (revLine)
     angle = (Pi * 2) - angle;
   QPointF arrowPt = revLine ? lines.front().p1() : lines.front().p1();
-  QPointF arrowP1 = arrowPt + QPointF(::sin(angle + Pi / 3) * arrowSize,      ::cos(angle + Pi / 3) * arrowSize);
+  QPointF arrowP1 = arrowPt + QPointF(::sin(angle + Pi / 3)      * arrowSize, ::cos(angle + Pi / 3)      * arrowSize);
   QPointF arrowP2 = arrowPt + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
 
   _head.clear();

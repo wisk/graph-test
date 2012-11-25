@@ -31,7 +31,12 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     std::vector<node> nodes;
     nodes.reserve(Len);
     for (int i = 0; i < Len; ++i)
-      nodes.push_back(G.newNode());
+    {
+      auto newNode = G.newNode();
+      GA.width()[newNode] = static_cast<double>(rand() % 300);
+      GA.height()[newNode] = static_cast<double>(rand() % 300);
+      nodes.push_back(newNode);
+    }
 
     std::vector<edge> edges;
     edges.push_back(G.newEdge(nodes[0], nodes[1]));
@@ -49,8 +54,8 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     edges.push_back(G.newEdge(nodes[8], nodes[10]));
     edges.push_back(G.newEdge(nodes[9], nodes[10]));
 
-    GA.setAllHeight(150);
-    GA.setAllWidth(150);
+    //GA.setAllHeight(150.0);
+    //GA.setAllWidth(150.0);
 
     SugiyamaLayout SL;
     SL.call(GA);
@@ -62,7 +67,8 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     std::vector<QGraphicsItem*> items;
     forall_nodes(v, G)
     {
-      auto bbItem = new BasicBlockItem(i++);
+      auto curNode = nodes[i];
+      auto bbItem = new BasicBlockItem(GA.width()[curNode], GA.height()[curNode], i++);
       items.push_back(bbItem);
       bbItem->moveBy(GA.x(v), GA.y(v));
       scene->addItem(bbItem);
