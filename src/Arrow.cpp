@@ -27,10 +27,20 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 {
   std::list<QPointF> points;
 
-  auto startRect = _startItem->boundingRect();
-  auto endRect = _startItem->boundingRect();
+  bool revLine = (_startItem->y() > _endItem->y()) ? true : false;
+  _clr = revLine ? Qt::red : Qt::blue;
 
-  if (_startItem->y() > _endItem->y())
+  QPen pen(_clr);
+  QBrush brs(_clr);
+
+  painter->setPen(pen);
+  painter->setBrush(brs);
+  painter->setRenderHint(QPainter::Antialiasing);
+
+  auto startRect = _startItem->boundingRect();
+  auto endRect   = _startItem->boundingRect();
+
+  if (revLine)
     points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y() + endRect.height()));
   else
     points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y()));
@@ -38,11 +48,12 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   for (auto it = _bends.begin(); it.valid(); ++it)
     points.push_back(QPointF(startRect.width() / 2 + (*it).m_x, startRect.height() / 2 + (*it).m_y));
 
-  if (_startItem->y() > _endItem->y())
+  if (revLine)
     points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y()));
   else
     points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y() + startRect.height()));
 
+  std::list<QLineF> lines;
   auto iterPt = std::begin(points);
   QPointF startPt, endPt;
   startPt = *iterPt;
@@ -50,15 +61,24 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   for (; iterPt != std::end(points); ++iterPt)
   {
     endPt = *iterPt;
-    painter->setRenderHint(QPainter::Antialiasing);
     setLine(startPt.x(), startPt.y(), endPt.x(), endPt.y());
-    if (_startItem->y() > _endItem->y())
-    {
-      QPen pen(Qt::red);
-      painter->setPen(pen);
-    }
     painter->drawLine(line());
+    lines.push_back(QLineF(startPt, endPt));
     startPt = endPt;
   }
+
+  static const qreal Pi = 3.14;
+  static const qreal arrowSize = 10.0;
+  double angle = ::acos(line().dx() / line().length());
+  QLineF arrowLine = revLine ? lines.front() : lines.back();
+  QPointF arrowP1 = arrowLine.p1() + QPointF(::sin(angle + Pi / 3) * arrowSize,      ::cos(angle + Pi / 3) * arrowSize);
+  QPointF arrowP2 = arrowLine.p1() + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
+
+  _head.clear();
+  _head << arrowLine.p1() << arrowP1 << arrowP2;
+  QPainterPath headPath;
+  headPath.addPolygon(_head);
+  headPath.setFillRule(Qt::WindingFill);
+  painter->drawPath(headPath);
 }
 
