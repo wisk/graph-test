@@ -70,12 +70,14 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   static const qreal Pi = 3.14;
   static const qreal arrowSize = 10.0;
   double angle = ::acos(line().dx() / line().length());
-  QLineF arrowLine = revLine ? lines.front() : lines.back();
-  QPointF arrowP1 = arrowLine.p1() + QPointF(::sin(angle + Pi / 3) * arrowSize,      ::cos(angle + Pi / 3) * arrowSize);
-  QPointF arrowP2 = arrowLine.p1() + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
+  if (revLine)
+    angle = (Pi * 2) - angle;
+  QPointF arrowPt = revLine ? lines.front().p1() : lines.front().p1();
+  QPointF arrowP1 = arrowPt + QPointF(::sin(angle + Pi / 3) * arrowSize,      ::cos(angle + Pi / 3) * arrowSize);
+  QPointF arrowP2 = arrowPt + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
 
   _head.clear();
-  _head << arrowLine.p1() << arrowP1 << arrowP2;
+  _head << arrowPt << arrowP1 << arrowP2;
   QPainterPath headPath;
   headPath.addPolygon(_head);
   headPath.setFillRule(Qt::WindingFill);
