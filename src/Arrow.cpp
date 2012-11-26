@@ -38,7 +38,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   painter->setRenderHint(QPainter::Antialiasing);
 
   auto startRect = _startItem->boundingRect();
-  auto endRect   = _startItem->boundingRect();
+  auto endRect   = _endItem->boundingRect();
 
   if (revLine)
     points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y() + endRect.height()));

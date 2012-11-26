@@ -33,8 +33,8 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     for (int i = 0; i < Len; ++i)
     {
       auto newNode = G.newNode();
-      GA.width()[newNode] = static_cast<double>(rand() % 300);
-      GA.height()[newNode] = static_cast<double>(rand() % 300);
+      GA.width()[newNode] = static_cast<double>(100 + rand() % 100);
+      GA.height()[newNode] = static_cast<double>(100 + rand() % 100);
       nodes.push_back(newNode);
     }
 
