@@ -1,4 +1,5 @@
 #include "ControlFlowGraphScene.hpp"
+#include "Arrow.hpp"
 
 void ControlFlowGraphScene::drawItems(QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[], QWidget *widget /*= 0*/)
 {
@@ -12,3 +13,15 @@ void ControlFlowGraphScene::drawItems(QPainter *painter, int numItems, QGraphics
   }
 }
 
+void ControlFlowGraphScene::refreshArrows(void)
+{
+  auto allItems = items();
+  for (int i = 0; i < allItems.size(); ++i)
+  {
+    auto arrow = dynamic_cast<Arrow *>(allItems.at(i));
+    if (arrow == nullptr) continue;
+    arrow->computeCoordinates();
+    update(arrow->boundingRect());
+    arrow->update();
+  }
+}

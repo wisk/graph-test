@@ -34,8 +34,8 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     for (int i = 0; i < Len; ++i)
     {
       auto newNode = G.newNode();
-      GA.width()[newNode] = static_cast<double>(50 + rand() % 50);
-      GA.height()[newNode] = static_cast<double>(50 + rand() % 50);
+      GA.width()[newNode] = static_cast<double>(100 + rand() % 50);
+      GA.height()[newNode] = static_cast<double>(100 + rand() % 50);
       nodes.push_back(newNode);
     }
 
@@ -76,7 +76,7 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     forall_nodes(v, G)
     {
       auto curNode = nodes[i];
-      auto bbItem = new BasicBlockItem(GA.width()[curNode], GA.height()[curNode], i++);
+      auto bbItem = new BasicBlockItem(scene, GA.width()[curNode], GA.height()[curNode], i++);
       items.push_back(bbItem);
       bbItem->moveBy(GA.x(v), GA.y(v));
       scene->addItem(bbItem);

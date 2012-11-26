@@ -1,8 +1,12 @@
 #include "BasicBlockItem.hpp"
+#include <QObject>
+#include <sstream>
 
-BasicBlockItem::BasicBlockItem(qreal width, qreal height, int id) : _width(width), _height(height), _isPress(false), _id(id), _z(zValue())
+BasicBlockItem::BasicBlockItem(QObject * parent, qreal width, qreal height, int id)
+  : _parent(parent), _width(width), _height(height), _isPress(false), _id(id), _z(zValue())
 {
   setFlag(ItemIsMovable);
+  connect(this, SIGNAL(moved()), _parent, SLOT(refreshArrows()));
 }
 
 QRectF BasicBlockItem::boundingRect(void) const
@@ -24,9 +28,9 @@ void BasicBlockItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
   setOpacity(opacity);
   painter->fillRect(rect, brush);
-  char buf[20];
-  itoa(_id, buf, 10);
-  painter->drawText(rect, buf);
+  std::ostringstream oss;
+  oss << "bb_" << _id;
+  painter->drawText(10, 10, QString::fromStdString(oss.str()));
   painter->drawRect(rect);
 }
 
@@ -36,13 +40,13 @@ void BasicBlockItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   setZValue(1.0);
   update();
   QGraphicsItem::mousePressEvent(event);
+  emit moved();
 }
 
 void BasicBlockItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   _isPress = false;
   setZValue(_z);
-  update();
   QGraphicsItem::mouseReleaseEvent(event);
+  emit moved();
 }
-

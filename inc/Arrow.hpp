@@ -16,6 +16,7 @@ public:
   int type(void) const { return Type; }
   virtual QRectF boundingRect(void) const;
   virtual QPainterPath shape() const;
+  void computeCoordinates(void);
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -24,8 +25,8 @@ private:
   QGraphicsItem *_startItem, *_endItem;
   ogdf::DPolyline _bends;
   QColor _clr;
-  QPolygonF _line;
-  QPolygonF _head;
+  QPainterPath _line;
+  QPainterPath _head;
 };
 
 #endif // Arrow_h__

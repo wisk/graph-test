@@ -4,41 +4,14 @@ Arrow::Arrow(QGraphicsItem * startItem, QGraphicsItem * endItem, ogdf::DPolyline
   : _startItem(startItem), _endItem(endItem), _clr(Qt::blue), _bends(bends)
 {
   setZValue(1.0);
+  computeCoordinates();
 }
 
 QPainterPath Arrow::shape(void) const
 {
-  std::vector<QPointF> points;
-  points.reserve(2 + _bends.size());
-  auto startRect = _startItem->boundingRect();
-  auto endRect   = _endItem->boundingRect();
-  bool revLine = (_startItem->y() > _endItem->y()) ? true : false;
-
-  if (revLine)
-    points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y() + endRect.height()));
-  else
-    points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y()));
-
-  for (auto it = _bends.begin(); it.valid(); ++it)
-    points.push_back(QPointF(startRect.width() / 2 + (*it).m_x, startRect.height() / 2 + (*it).m_y));
-
-  if (revLine)
-    points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y()));
-  else
-    points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y() + startRect.height()));
-
   QPainterPath path;
-
-  path.moveTo(points.front());
-  for (size_t i = points.size(); i + 2 < points.size(); ++i)
-    path.cubicTo(points[i], points[i + 1], points[i + 2]);
-
-  //QPolygonF poly;
-  //for (auto it = std::begin(points); it != std::end(points); ++it)
-  //  poly << *it;
-
-  //path.addPolygon(poly);
-  path.addPolygon(_head);
+  path.addPath(_line);
+  path.addPath(_head);
   return path;
 }
 
@@ -49,21 +22,30 @@ QRectF Arrow::boundingRect(void) const
 
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
 {
-  std::list<QPointF> points;
-
+  std::vector<QPointF> points;
   bool revLine = (_startItem->y() > _endItem->y()) ? true : false;
   _clr = revLine ? Qt::red : Qt::blue;
 
+  painter->setRenderHint(QPainter::Antialiasing);
   QPen pen(_clr);
+  pen.setWidth(2);
   QBrush brs(_clr);
 
   painter->setPen(pen);
+  painter->drawPath(_line);
   painter->setBrush(brs);
-  painter->setRenderHint(QPainter::Antialiasing);
+  painter->drawPath(_head);
+}
 
+void Arrow::computeCoordinates(void)
+{
+  std::vector<QPointF> points;
+  points.reserve(2 + _bends.size());
   auto startRect = _startItem->boundingRect();
   auto endRect   = _endItem->boundingRect();
+  bool revLine = (_startItem->y() > _endItem->y()) ? true : false;
 
+  // Retrieve points
   if (revLine)
     points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y() + endRect.height()));
   else
@@ -77,18 +59,35 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   else
     points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y() + startRect.height()));
 
+  // Retrieve lines and boundingRect
   std::list<QLineF> lines;
   auto iterPt = std::begin(points);
   QPointF startPt, endPt;
   startPt = *iterPt;
+  qreal x0 = iterPt->x(), y0 = iterPt->y(), x1 = iterPt->x(), y1 = iterPt->y();
   ++iterPt;
   for (; iterPt != std::end(points); ++iterPt)
   {
-    endPt = *iterPt;
     lines.push_back(QLineF(startPt, endPt));
     startPt = endPt;
   }
 
+  // Generate path for line
+  _line = QPainterPath();
+  if (points.size() == 2)
+  {
+    QPolygonF polyLine;
+    polyLine << points.front() << points.back();
+    _line.addPolygon(polyLine);
+  }
+  else
+  {
+    _line.moveTo(points.front());
+    for (size_t i = 0; i + 2 < points.size(); ++i)
+      _line.cubicTo(points[i], points[i + 1], points[i + 2]);
+  }
+
+  // Generate path for head
   static const qreal Pi = 3.14;
   static const qreal arrowSize = 10.0;
   auto refLine = revLine ? lines.front() : lines.back();
@@ -98,13 +97,8 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   QPointF arrowPt = revLine ? lines.front().p1() : lines.front().p1();
   QPointF arrowP1 = arrowPt + QPointF(::sin(angle + Pi / 3)      * arrowSize, ::cos(angle + Pi / 3)      * arrowSize);
   QPointF arrowP2 = arrowPt + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
-
-  _head.clear();
-  _head << arrowPt << arrowP1 << arrowP2;
-  QPainterPath headPath;
-  headPath.addPath(this->shape());
-  headPath.addPolygon(_head);
-  headPath.setFillRule(Qt::WindingFill);
-  painter->drawPath(headPath);
+  QPolygonF head;
+  head << arrowPt << arrowP1 << arrowP2;
+  _head.addPolygon(head);
+  _head.setFillRule(Qt::WindingFill);
 }
-

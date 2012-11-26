@@ -21,6 +21,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 find_package(OGDF REQUIRED)
 
 include_directories(${OGDF_INCLUDE_DIRS})
+message(${OGDF_INCLUDE_DIRS})
 
 set(INC
   ${INCROOT}/Arrow.hpp
@@ -41,6 +42,8 @@ set(SRC
 
 set(MOCINC
   ${INCROOT}/dialog.hpp
+  ${INCROOT}/BasicBlockItem.hpp
+  ${INCROOT}/ControlFlowGraphScene.hpp
 )
 
 set(UI
@@ -50,9 +53,9 @@ set(UI
 qt4_wrap_cpp(MOC ${MOCINC})
 qt4_wrap_ui(UIINC ${UI})
 
-if(WIN32)
-  set(GUI_TYPE WIN32)
-endif()
+#if(WIN32)
+#  set(GUI_TYPE WIN32)
+#endif()
 
 add_executable(graph-test ${GUI_TYPE}
   ${INC}

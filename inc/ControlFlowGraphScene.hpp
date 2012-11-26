@@ -6,10 +6,14 @@
 
 class ControlFlowGraphScene : public QGraphicsScene
 {
+  Q_OBJECT
 public:
   explicit ControlFlowGraphScene(QObject * parent = 0) : QGraphicsScene(parent) {}
 
   virtual void drawItems(QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[], QWidget *widget = 0);
+
+public slots:
+  void refreshArrows(void);
 
 private:
 };
