@@ -11,6 +11,7 @@
 #include <ogdf/layered/SugiyamaLayout.h>
 #include <ogdf/layered/MedianHeuristic.h>
 #include <ogdf/layered/OptimalRanking.h>
+#include <ogdf/layered/FastHierarchyLayout.h>
 
 Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
 {
@@ -33,10 +34,13 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     for (int i = 0; i < Len; ++i)
     {
       auto newNode = G.newNode();
-      GA.width()[newNode] = static_cast<double>(100 + rand() % 100);
-      GA.height()[newNode] = static_cast<double>(100 + rand() % 100);
+      GA.width()[newNode] = static_cast<double>(50 + rand() % 50);
+      GA.height()[newNode] = static_cast<double>(50 + rand() % 50);
       nodes.push_back(newNode);
     }
+
+    //GA.setAllHeight(150);
+    //GA.setAllWidth(150);
 
     std::vector<edge> edges;
     edges.push_back(G.newEdge(nodes[0], nodes[1]));
@@ -58,6 +62,10 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
     //GA.setAllWidth(150.0);
 
     SugiyamaLayout SL;
+    auto FHL = new FastHierarchyLayout;
+    FHL->nodeDistance(50.0);
+    FHL->layerDistance(50.0);
+    SL.setLayout(FHL);
     SL.call(GA);
 
     GA.writeGML("test.gml");

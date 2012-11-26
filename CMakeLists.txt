@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 project(GraphTest)
 
-find_package(Boost 1.50 COMPONENTS graph REQUIRED)
 find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 
 include(${QT_USE_FILE})

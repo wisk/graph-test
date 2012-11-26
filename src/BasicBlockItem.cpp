@@ -1,5 +1,4 @@
 #include "BasicBlockItem.hpp"
-#include <boost/lexical_cast.hpp>
 
 BasicBlockItem::BasicBlockItem(qreal width, qreal height, int id) : _width(width), _height(height), _isPress(false), _id(id), _z(zValue())
 {
@@ -25,7 +24,9 @@ void BasicBlockItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
   setOpacity(opacity);
   painter->fillRect(rect, brush);
-  painter->drawText(rect, boost::lexical_cast<std::string>(_id).c_str());
+  char buf[20];
+  itoa(_id, buf, 10);
+  painter->drawText(rect, buf);
   painter->drawRect(rect);
 }
 

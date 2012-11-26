@@ -1,12 +1,12 @@
 #ifndef Arrow_h__
 #define Arrow_h__
 
-#include <QGraphicsLineItem>
+#include <QAbstractGraphicsShapeItem>
 #include <QPen>
 #include <QPainter>
 #include <ogdf/basic/geometry.h>
 
-class Arrow : public QGraphicsLineItem
+class Arrow : public QAbstractGraphicsShapeItem
 {
 public:
   enum { Type = UserType + 1 };
@@ -24,6 +24,7 @@ private:
   QGraphicsItem *_startItem, *_endItem;
   ogdf::DPolyline _bends;
   QColor _clr;
+  QPolygonF _line;
   QPolygonF _head;
 };
 
