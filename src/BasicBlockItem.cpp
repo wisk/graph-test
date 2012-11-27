@@ -5,7 +5,7 @@
 BasicBlockItem::BasicBlockItem(QObject * parent, qreal width, qreal height, int id)
   : _parent(parent), _width(width), _height(height), _isPress(false), _id(id), _z(zValue()), _fx(new QGraphicsDropShadowEffect(this))
 {
-  setFlag(ItemIsMovable);
+  setFlags(ItemIsMovable | ItemIsSelectable);
   _fx->setBlurRadius(25.0);
   setGraphicsEffect(_fx);
 }
