@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPainter>
 #include <QGraphicsItem>
+#include <QGraphicsDropShadowEffect>
 
 class BasicBlockItem : public QObject, public QGraphicsItem
 {
@@ -22,11 +23,12 @@ signals:
   void moved(void);
 
 private:
-  QObject * _parent;
-  qreal _width, _height;
-  bool _isPress;
-  int _id;
-  qreal _z;
+  QObject *                  _parent;
+  qreal                      _width, _height;
+  bool                       _isPress;
+  int                        _id;
+  qreal                      _z;
+  QGraphicsDropShadowEffect *_fx;
 };
 
 #endif // BasicBlockItem_h__

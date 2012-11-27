@@ -3,10 +3,11 @@
 #include <sstream>
 
 BasicBlockItem::BasicBlockItem(QObject * parent, qreal width, qreal height, int id)
-  : _parent(parent), _width(width), _height(height), _isPress(false), _id(id), _z(zValue())
+  : _parent(parent), _width(width), _height(height), _isPress(false), _id(id), _z(zValue()), _fx(new QGraphicsDropShadowEffect(this))
 {
   setFlag(ItemIsMovable);
-  connect(this, SIGNAL(moved()), _parent, SLOT(refreshArrows()));
+  _fx->setBlurRadius(25.0);
+  setGraphicsEffect(_fx);
 }
 
 QRectF BasicBlockItem::boundingRect(void) const
@@ -17,17 +18,20 @@ QRectF BasicBlockItem::boundingRect(void) const
 void BasicBlockItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
 {
   QRectF rect = boundingRect();
-  QBrush brush(Qt::lightGray);
+  QColor clr = Qt::lightGray;
   qreal opacity = 1.0;
 
   if (_isPress)
   {
-    brush.setColor(Qt::blue);
-    opacity = 0.5;
+    clr = Qt::blue;
+    opacity = 0.7;
   }
+
+  QBrush brush(clr);
 
   setOpacity(opacity);
   painter->fillRect(rect, brush);
+  _fx->setColor(clr);
   std::ostringstream oss;
   oss << "bb_" << _id;
   painter->drawText(10, 10, QString::fromStdString(oss.str()));
@@ -40,13 +44,12 @@ void BasicBlockItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   setZValue(1.0);
   update();
   QGraphicsItem::mousePressEvent(event);
-  emit moved();
 }
 
 void BasicBlockItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  QGraphicsItem::mouseReleaseEvent(event);
   _isPress = false;
   setZValue(_z);
-  QGraphicsItem::mouseReleaseEvent(event);
-  emit moved();
+  update();
 }

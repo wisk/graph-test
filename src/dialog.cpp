@@ -88,7 +88,7 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
       forall_adj_edges(e, v)
       {
         auto bends = GA.bends(e);
-        auto bbEdge = new Arrow(items[e->source()->index()], items[e->target()->index()], bends);
+        auto bbEdge = new Edge(items[e->source()->index()], items[e->target()->index()], bends);
         scene->addItem(bbEdge);
       }
     }

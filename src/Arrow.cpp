@@ -1,13 +1,13 @@
 #include "Arrow.hpp"
 
-Arrow::Arrow(QGraphicsItem * startItem, QGraphicsItem * endItem, ogdf::DPolyline const& bends)
+Edge::Edge(QGraphicsItem * startItem, QGraphicsItem * endItem, ogdf::DPolyline const& bends)
   : _startItem(startItem), _endItem(endItem), _clr(Qt::blue), _bends(bends)
 {
   setZValue(1.0);
   computeCoordinates();
 }
 
-QPainterPath Arrow::shape(void) const
+QPainterPath Edge::shape(void) const
 {
   QPainterPath path;
   path.addPath(_line);
@@ -15,13 +15,14 @@ QPainterPath Arrow::shape(void) const
   return path;
 }
 
-QRectF Arrow::boundingRect(void) const
+QRectF Edge::boundingRect(void) const
 {
   return shape().boundingRect();
 }
 
-void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
+void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget /*= 0*/)
 {
+  computeCoordinates();
   std::vector<QPointF> points;
   bool revLine = (_startItem->y() > _endItem->y()) ? true : false;
   _clr = revLine ? Qt::red : Qt::blue;
@@ -37,8 +38,9 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
   painter->drawPath(_head);
 }
 
-void Arrow::computeCoordinates(void)
+void Edge::computeCoordinates(void)
 {
+  prepareGeometryChange();
   std::vector<QPointF> points;
   points.reserve(2 + _bends.size());
   auto startRect = _startItem->boundingRect();
@@ -90,15 +92,16 @@ void Arrow::computeCoordinates(void)
   // Generate path for head
   static const qreal Pi = 3.14;
   static const qreal arrowSize = 10.0;
-  auto refLine = revLine ? lines.front() : lines.back();
+  auto refLine = revLine ? lines.back() : lines.front();
   double angle = ::acos(refLine.dx() / refLine.length());
   if (revLine)
     angle = (Pi * 2) - angle;
-  QPointF arrowPt = revLine ? lines.front().p1() : lines.front().p1();
+  QPointF arrowPt = refLine.p1();
   QPointF arrowP1 = arrowPt + QPointF(::sin(angle + Pi / 3)      * arrowSize, ::cos(angle + Pi / 3)      * arrowSize);
   QPointF arrowP2 = arrowPt + QPointF(::sin(angle + Pi - Pi / 3) * arrowSize, ::cos(angle + Pi - Pi / 3) * arrowSize);
   QPolygonF head;
   head << arrowPt << arrowP1 << arrowP2;
-  _head.addPolygon(head);
-  _head.setFillRule(Qt::WindingFill);
+  _head = QPainterPath();
+  //_head.addPolygon(head);
+  //_head.setFillRule(Qt::WindingFill);
 }

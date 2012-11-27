@@ -18,10 +18,20 @@ void ControlFlowGraphScene::refreshArrows(void)
   auto allItems = items();
   for (int i = 0; i < allItems.size(); ++i)
   {
-    auto arrow = dynamic_cast<Arrow *>(allItems.at(i));
+    auto arrow = dynamic_cast<Edge *>(allItems.at(i));
     if (arrow == nullptr) continue;
     arrow->computeCoordinates();
     update(arrow->boundingRect());
     arrow->update();
   }
+}
+
+void ControlFlowGraphScene::drawBackground(QPainter *painter, const QRectF &rect)
+{
+  QGraphicsScene::drawBackground(painter, rect);
+}
+
+void ControlFlowGraphScene::drawForeground(QPainter *painter, const QRectF &rect)
+{
+  QGraphicsScene::drawForeground(painter, rect);
 }
