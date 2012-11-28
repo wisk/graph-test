@@ -11,8 +11,8 @@ int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
 
-  Dialog dlg;
-  dlg.show();
+  MainWindow mw;
+  mw.show();
 
   return app.exec();
 }

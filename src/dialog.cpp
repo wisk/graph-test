@@ -13,15 +13,14 @@
 #include <ogdf/layered/OptimalRanking.h>
 #include <ogdf/layered/FastHierarchyLayout.h>
 
-Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
+MainWindow::MainWindow(QWidget * parent /*= 0*/) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
   //try
   {
     ui->setupUi(this);
-
     scene = new ControlFlowGraphScene(this);
     ui->graphicsView->setScene(scene);
-
+    
     using namespace ogdf;
 
     Graph G;
@@ -99,7 +98,7 @@ Dialog::Dialog(QWidget * parent /*= 0*/) : QDialog(parent), ui(new Ui::Dialog)
   //}
 }
 
-Dialog::~Dialog(void)
+MainWindow::~MainWindow(void)
 {
   delete ui;
 

@@ -3,25 +3,25 @@
 
 #include <QtCore>
 #include <QtGui>
-#include <QDialog>
+#include <QMainWindow>
 #include "ControlFlowGraphScene.hpp"
 
 namespace Ui
 {
-  class Dialog;
+  class MainWindow;
 }
 
-class Dialog : public QDialog
+class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
 public:
-  explicit Dialog(QWidget * parent = 0);
-  ~Dialog(void);
+  explicit MainWindow(QWidget * parent = 0);
+  ~MainWindow(void);
 
 
 private:
-  Ui::Dialog *ui;
+  Ui::MainWindow *ui;
   ControlFlowGraphScene *scene;
   typedef std::vector<QGraphicsItem *> VectorItem;
   VectorItem items;
