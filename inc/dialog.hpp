@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QMainWindow>
+#include "ControlFlowGraphView.hpp"
 #include "ControlFlowGraphScene.hpp"
 
 namespace Ui
@@ -18,7 +19,6 @@ class MainWindow : public QMainWindow
 public:
   explicit MainWindow(QWidget * parent = 0);
   ~MainWindow(void);
-
 
 private:
   Ui::MainWindow *ui;

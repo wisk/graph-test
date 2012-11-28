@@ -15,87 +15,76 @@
 
 MainWindow::MainWindow(QWidget * parent /*= 0*/) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-  //try
+  ui->setupUi(this);
+  scene = new ControlFlowGraphScene(this);
+  ui->graphicsView->setScene(scene);
+
+  using namespace ogdf;
+
+  Graph G;
+  GraphAttributes GA(G, GraphAttributes::nodeGraphics | GraphAttributes::edgeGraphics);
+
+  const int Len = 350;
+  node lastNode = nullptr;
+  std::vector<node> nodes;
+  nodes.reserve(Len);
+  for (int i = 0; i < Len; ++i)
   {
-    ui->setupUi(this);
-    scene = new ControlFlowGraphScene(this);
-    ui->graphicsView->setScene(scene);
-    
-    using namespace ogdf;
+    auto newNode = G.newNode();
+    GA.width()[newNode] = static_cast<double>(100 + rand() % 50);
+    GA.height()[newNode] = static_cast<double>(100 + rand() % 50);
+    nodes.push_back(newNode);
+  }
 
-    Graph G;
-    GraphAttributes GA(G, GraphAttributes::nodeGraphics | GraphAttributes::edgeGraphics);
+  std::vector<edge> edges;
+  for (int i = 0; i < Len * 2; ++i)
+    edges.push_back(G.newEdge(nodes[rand() % Len], nodes[rand() % Len]));
+  //edges.push_back(G.newEdge(nodes[0], nodes[1]));
+  //edges.push_back(G.newEdge(nodes[0], nodes[2]));
+  //edges.push_back(G.newEdge(nodes[1], nodes[3]));
+  //edges.push_back(G.newEdge(nodes[2], nodes[3]));
+  //edges.push_back(G.newEdge(nodes[3], nodes[4]));
+  //edges.push_back(G.newEdge(nodes[4], nodes[5]));
+  //edges.push_back(G.newEdge(nodes[5], nodes[4]));
+  //edges.push_back(G.newEdge(nodes[5], nodes[6]));
+  //edges.push_back(G.newEdge(nodes[6], nodes[7]));
+  //edges.push_back(G.newEdge(nodes[6], nodes[8]));
+  //edges.push_back(G.newEdge(nodes[6], nodes[9]));
+  //edges.push_back(G.newEdge(nodes[7], nodes[10]));
+  //edges.push_back(G.newEdge(nodes[8], nodes[10]));
+  //edges.push_back(G.newEdge(nodes[9], nodes[10]));
 
-    const int Len = 11;
-    node lastNode = nullptr;
-    std::vector<node> nodes;
-    nodes.reserve(Len);
-    for (int i = 0; i < Len; ++i)
+  SugiyamaLayout SL;
+  auto FHL = new FastHierarchyLayout;
+  FHL->nodeDistance(25.0);
+  FHL->layerDistance(25.0);
+  SL.setLayout(FHL);
+  SL.call(GA);
+
+  GA.writeGML("test.gml");
+
+  int i = 0;
+  node v;
+  std::vector<QGraphicsItem*> items;
+  forall_nodes(v, G)
+  {
+    auto curNode = nodes[i];
+    auto bbItem = new BasicBlockItem(scene, GA.width()[curNode], GA.height()[curNode], i++);
+    items.push_back(bbItem);
+    bbItem->moveBy(GA.x(v), GA.y(v));
+    scene->addItem(bbItem);
+  }
+
+  forall_nodes(v, G)
+  {
+    edge e;
+    forall_adj_edges(e, v)
     {
-      auto newNode = G.newNode();
-      GA.width()[newNode] = static_cast<double>(100 + rand() % 50);
-      GA.height()[newNode] = static_cast<double>(100 + rand() % 50);
-      nodes.push_back(newNode);
-    }
-
-    //GA.setAllHeight(150);
-    //GA.setAllWidth(150);
-
-    std::vector<edge> edges;
-    edges.push_back(G.newEdge(nodes[0], nodes[1]));
-    edges.push_back(G.newEdge(nodes[0], nodes[2]));
-    edges.push_back(G.newEdge(nodes[1], nodes[3]));
-    edges.push_back(G.newEdge(nodes[2], nodes[3]));
-    edges.push_back(G.newEdge(nodes[3], nodes[4]));
-    edges.push_back(G.newEdge(nodes[4], nodes[5]));
-    edges.push_back(G.newEdge(nodes[5], nodes[4]));
-    edges.push_back(G.newEdge(nodes[5], nodes[6]));
-    edges.push_back(G.newEdge(nodes[6], nodes[7]));
-    edges.push_back(G.newEdge(nodes[6], nodes[8]));
-    edges.push_back(G.newEdge(nodes[6], nodes[9]));
-    edges.push_back(G.newEdge(nodes[7], nodes[10]));
-    edges.push_back(G.newEdge(nodes[8], nodes[10]));
-    edges.push_back(G.newEdge(nodes[9], nodes[10]));
-
-    //GA.setAllHeight(150.0);
-    //GA.setAllWidth(150.0);
-
-    SugiyamaLayout SL;
-    auto FHL = new FastHierarchyLayout;
-    FHL->nodeDistance(50.0);
-    FHL->layerDistance(50.0);
-    SL.setLayout(FHL);
-    SL.call(GA);
-
-    GA.writeGML("test.gml");
-
-    int i = 0;
-    node v;
-    std::vector<QGraphicsItem*> items;
-    forall_nodes(v, G)
-    {
-      auto curNode = nodes[i];
-      auto bbItem = new BasicBlockItem(scene, GA.width()[curNode], GA.height()[curNode], i++);
-      items.push_back(bbItem);
-      bbItem->moveBy(GA.x(v), GA.y(v));
-      scene->addItem(bbItem);
-    }
-
-    forall_nodes(v, G)
-    {
-      edge e;
-      forall_adj_edges(e, v)
-      {
-        auto bends = GA.bends(e);
-        auto bbEdge = new Edge(items[e->source()->index()], items[e->target()->index()], bends);
-        scene->addItem(bbEdge);
-      }
+      auto bends = GA.bends(e);
+      auto bbEdge = new Edge(items[e->source()->index()], items[e->target()->index()], bends);
+      scene->addItem(bbEdge);
     }
   }
-  //catch (ogdf::Exception const& e)
-  //{
-  //  QMessageBox::warning(this, "OGDF exception", typeid(e).name());
-  //}
 }
 
 MainWindow::~MainWindow(void)

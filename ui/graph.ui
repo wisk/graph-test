@@ -13,20 +13,19 @@
   <property name="windowTitle">
    <string>Graph</string>
   </property>
-  <widget class="QGraphicsView" name="graphicsView">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>941</width>
-     <height>791</height>
-    </rect>
-   </property>
+  <widget class="ControlFlowGraphView" name="graphicsView">
    <property name="resizeAnchor">
     <enum>QGraphicsView::AnchorViewCenter</enum>
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ControlFlowGraphView</class>
+   <extends>QGraphicsView</extends>
+   <header>controlflowgraphview.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -53,8 +53,8 @@ void Edge::computeCoordinates(void)
   else
     points.push_back(QPointF(_endItem->x() + endRect.width() / 2, _endItem->y()));
 
-  for (auto it = _bends.begin(); it.valid(); ++it)
-    points.push_back(QPointF(startRect.width() / 2 + (*it).m_x, startRect.height() / 2 + (*it).m_y));
+  //for (auto it = _bends.begin(); it.valid(); ++it)
+  //  points.push_back(QPointF(startRect.width() / 2 + (*it).m_x, startRect.height() / 2 + (*it).m_y));
 
   if (revLine)
     points.push_back(QPointF(_startItem->x() + startRect.width() / 2, _startItem->y()));
