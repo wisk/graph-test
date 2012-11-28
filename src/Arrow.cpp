@@ -64,14 +64,13 @@ void Edge::computeCoordinates(void)
   // Retrieve lines and boundingRect
   std::list<QLineF> lines;
   auto iterPt = std::begin(points);
-  QPointF startPt, endPt;
+  QPointF startPt;
   startPt = *iterPt;
-  qreal x0 = iterPt->x(), y0 = iterPt->y(), x1 = iterPt->x(), y1 = iterPt->y();
   ++iterPt;
   for (; iterPt != std::end(points); ++iterPt)
   {
-    lines.push_back(QLineF(startPt, endPt));
-    startPt = endPt;
+    lines.push_back(QLineF(startPt, *iterPt));
+    startPt = *iterPt;
   }
 
   // Generate path for line
@@ -92,7 +91,7 @@ void Edge::computeCoordinates(void)
   // Generate path for head
   static const qreal Pi = 3.14;
   static const qreal arrowSize = 10.0;
-  auto refLine = revLine ? lines.back() : lines.front();
+  auto refLine = revLine ? lines.front() : lines.front();
   double angle = ::acos(refLine.dx() / refLine.length());
   if (revLine)
     angle = (Pi * 2) - angle;
@@ -102,6 +101,6 @@ void Edge::computeCoordinates(void)
   QPolygonF head;
   head << arrowPt << arrowP1 << arrowP2;
   _head = QPainterPath();
-  //_head.addPolygon(head);
-  //_head.setFillRule(Qt::WindingFill);
+  _head.addPolygon(head);
+  _head.setFillRule(Qt::WindingFill);
 }
