@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget * parent /*= 0*/) : QMainWindow(parent), ui(new U
   Graph G;
   GraphAttributes GA(G, GraphAttributes::nodeGraphics | GraphAttributes::edgeGraphics);
 
-  const int Len = 350;
+  const int Len = 40;
   node lastNode = nullptr;
   std::vector<node> nodes;
   nodes.reserve(Len);
