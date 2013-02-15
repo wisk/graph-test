@@ -24,40 +24,26 @@ MainWindow::MainWindow(QWidget * parent /*= 0*/) : QMainWindow(parent), ui(new U
   Graph G;
   GraphAttributes GA(G, GraphAttributes::nodeGraphics | GraphAttributes::edgeGraphics);
 
-  const int Len = 40;
+  const int Len = 5;
   node lastNode = nullptr;
   std::vector<node> nodes;
   nodes.reserve(Len);
   for (int i = 0; i < Len; ++i)
   {
     auto newNode = G.newNode();
-    GA.width()[newNode] = static_cast<double>(100 + rand() % 50);
-    GA.height()[newNode] = static_cast<double>(100 + rand() % 50);
+    GA.width()[newNode] = static_cast<double>(100 + rand() % 500);
+    GA.height()[newNode] = static_cast<double>(100 + rand() % 200);
     nodes.push_back(newNode);
   }
 
   std::vector<edge> edges;
   for (int i = 0; i < Len * 2; ++i)
     edges.push_back(G.newEdge(nodes[rand() % Len], nodes[rand() % Len]));
-  //edges.push_back(G.newEdge(nodes[0], nodes[1]));
-  //edges.push_back(G.newEdge(nodes[0], nodes[2]));
-  //edges.push_back(G.newEdge(nodes[1], nodes[3]));
-  //edges.push_back(G.newEdge(nodes[2], nodes[3]));
-  //edges.push_back(G.newEdge(nodes[3], nodes[4]));
-  //edges.push_back(G.newEdge(nodes[4], nodes[5]));
-  //edges.push_back(G.newEdge(nodes[5], nodes[4]));
-  //edges.push_back(G.newEdge(nodes[5], nodes[6]));
-  //edges.push_back(G.newEdge(nodes[6], nodes[7]));
-  //edges.push_back(G.newEdge(nodes[6], nodes[8]));
-  //edges.push_back(G.newEdge(nodes[6], nodes[9]));
-  //edges.push_back(G.newEdge(nodes[7], nodes[10]));
-  //edges.push_back(G.newEdge(nodes[8], nodes[10]));
-  //edges.push_back(G.newEdge(nodes[9], nodes[10]));
 
   SugiyamaLayout SL;
   auto FHL = new FastHierarchyLayout;
   FHL->nodeDistance(25.0);
-  FHL->layerDistance(25.0);
+  FHL->layerDistance(100.0);
   SL.setLayout(FHL);
   SL.call(GA);
 
